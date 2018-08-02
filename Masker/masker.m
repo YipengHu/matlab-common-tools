@@ -3,8 +3,8 @@
 %  masker(image_vol, label_vol);
 %       image_vol - 2d or 3d intensity image
 %       label_vol - 2d or 3d mask with defalut cutoff=0.5
-% 
-%Return edited/segmented mask, requiring hanging the command line:   
+%
+%Return edited/segmented mask, requiring hanging the command line:
 %  label_out = masker(image_vol);
 %  label_out = masker(image_vol, label_vol);
 %
@@ -13,7 +13,7 @@
 %  label_out = masker(image_vol, label_vol, filename);
 %
 % GUI shortcuts:
-%  Mouse scroll - change slice (the 3rd dimension) of the volume(s);
+%  Mouse scroll: change slice (the 3rd dimension) of the volume(s);
 %  Left-click: labeling
 %  Right-click: removing labeling
 %  "s" + scroll: brush size
@@ -62,7 +62,7 @@ KeyHold.c = false;
 [xc,yc] = meshgrid(1:size_image(2),1:size_image(1));
 
 %% build a GUI
-hFigure = figure('Name','the little masker','Unit','Normalized', ...
+hFigure = figure('Name','The little masker','Unit','Normalized', ...
     'NumberTitle','off','MenuBar','none', 'Toolbar','none');
 if ~isempty(fig_pos), set(hFigure,'Position', fig_pos); end
 hAxes = axes('parent',hFigure,'Unit','Normalized','Position',[0,0,1,1], ...
@@ -81,6 +81,16 @@ set(hBrush,'color',MaskColour)
 CurrentAxesPoint = get(hAxes,'CurrentPoint');
 updateBrush(CurrentAxesPoint(1,:));
 
+% user guide
+msgbox({
+    'Mouse scroll: change slice';
+    'Left-click: labeling'; 
+    'Right-click: removing labeling'; 
+    '"s" + scroll: brush size'; 
+    '"c" + scroll: image intensity contrast';
+    '"a" + scroll: label transparency'}, 'The little masker guide');
+
+
 %% figure callbacks
 set(hFigure,'WindowScrollWheelFcn',@Callback_Figure_Scroll);
 set(hFigure,'WindowButtonDownFcn',@Callback_Figure_MouseButtonDown);
@@ -93,7 +103,7 @@ set(hFigure,'DeleteFcn',@Callback_Figure_Delete);
 
 if ~isempty(filename)
     if iscell(filename) && strcmpi(filename{1}(end-2:end),'.h5')
-    fprintf('masker: File to be saved in:\n    %s\n',filename{1});
+        fprintf('masker: File to be saved in:\n    %s\n',filename{1});
     end
 else
     fprintf('masker: File to be saved in:\n    %s\n',filename);
@@ -108,9 +118,9 @@ return;
         if ~isempty(filename)
             
             if iscell(filename) && strcmpi(filename{1}(end-2:end),'.h5')   % save to h5
-                h5write(filename{1},filename{2},uint8(label_vol));    
-                fprintf('masker: Masks saved: %s.\n',filename{1});    
-            else  % save to mat file                
+                h5write(filename{1},filename{2},uint8(label_vol));
+                fprintf('masker: Masks saved: %s.\n',filename{1});
+            else  % save to mat file
                 if exist(filename,'file')
                     filename = [strrep(filename,'.mat',''),num2str(now)];
                 end
@@ -154,51 +164,51 @@ return;
         end
     end
 
-    function  Callback_Figure_Scroll(~,eventdata)        
-        if KeyHold.a  % change alpha            
+    function  Callback_Figure_Scroll(~,eventdata)
+        if KeyHold.a  % change alpha
             idx_alpha = idx_alpha - eventdata.VerticalScrollCount * 0.1;
             if (idx_alpha<0); idx_alpha=0; return; end
             if (idx_alpha>1); idx_alpha=1; return; end
             updateDisplaySlice;
             return;
         end
-        if KeyHold.s  % change size         
+        if KeyHold.s  % change size
             BrushSize = BrushSize - eventdata.VerticalScrollCount * BrushSizeRange(3);
             if (BrushSize<BrushSizeRange(1)); BrushSize=BrushSizeRange(1); return; end
             if (BrushSize>BrushSizeRange(2)); BrushSize=BrushSizeRange(2); return; end
             updateBurshShape;   % CurrentAxesPoint = get(hAxes,'CurrentPoint');  % TODO: a strange bug here
             updateBrush(CurrentAxesPoint(1,:));
             return;
-        end  
-        if KeyHold.c  % change alpha            
+        end
+        if KeyHold.c  % change alpha
             idx_contrast = idx_contrast - eventdata.VerticalScrollCount * 0.1;
             if (idx_contrast<0); idx_contrast=0; return; end
             if (idx_contrast>2); idx_contrast=2; return; end
             updateDisplaySlice;
             return;
-        end     
+        end
         % otherwise browse
         idx_slice = idx_slice + eventdata.VerticalScrollCount;
         if (idx_slice<1); idx_slice=1; return; end
         if (idx_slice>size_image(3)); idx_slice= size_image(3); return; end
-        updateDisplaySlice;        
+        updateDisplaySlice;
         fprintf('masker: Slice = %d/%d.\n',idx_slice,size_image(3));
     end
 
     function  Callback_Figure_MouseMotion(~,~)
         CurrentAxesPoint = get(hAxes,'CurrentPoint');
-        updateBrush(CurrentAxesPoint(1,:));        
+        updateBrush(CurrentAxesPoint(1,:));
         if ButtonHold.Left  % add
             applyBrush(CurrentAxesPoint(1,:),true);
             updateDisplaySlice;
-        end        
+        end
         if ButtonHold.Right  % delete
             applyBrush(CurrentAxesPoint(1,:),false);
             updateDisplaySlice;
         end
-    end  
+    end
 
-    function  Callback_Figure_MouseButtonDown(hObject,~)        
+    function  Callback_Figure_MouseButtonDown(hObject,~)
         CurrentAxesPoint = get(hAxes,'CurrentPoint');
         switch  lower(get(hObject,'SelectionType'))
             case  'alt'
@@ -213,7 +223,7 @@ return;
                 applyBrush(CurrentAxesPoint(1,:),true);
                 updateDisplaySlice;
                 updateBrush(CurrentAxesPoint(1,:));
-        end        
+        end
     end
 
     function  Callback_Figure_MouseButtonUp(~,~)
@@ -221,7 +231,7 @@ return;
         ButtonHold.Left = false;
     end
 
-    function  Callback_Figure_KeyPress(~,eventdata)        
+    function  Callback_Figure_KeyPress(~,eventdata)
         KeyHold = structfun(@(x) and(x,false), KeyHold, 'Uniform',false);
         KeyHold.(lower(eventdata.Key)) = true;
     end
