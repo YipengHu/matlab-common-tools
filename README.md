@@ -3,7 +3,7 @@ A collection of independent tools, by folder, for surgical and interventional ap
 
 ## GuidedCPD 
 - A point cloud registration tool based on:
-Hu, Yipeng, et al. "Deformable vessel-based registration using landmark-guided coherent point drift." International Workshop on Medical Imaging and Virtual Reality. Springer, Berlin, Heidelberg, 2010.
+Hu et al. (2010) "Deformable vessel-based registration using landmark-guided coherent point drift." International Workshop on Medical Imaging and Virtual Reality
 
 ## Masker 
 - A small interactive voxel paiting tool for 3D medical images
