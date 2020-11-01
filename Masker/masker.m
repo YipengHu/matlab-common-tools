@@ -39,7 +39,7 @@ size_image = size(image_vol);
 if length(size_image)==2, size_image(3)=1; end
 if nargin<2 || isempty(label_vol)
     label_vol = false(size_image);
-elseif any(size_image~=size(label_vol))
+elseif any(size_image(1:end-(size_image(3)==1))~=size(label_vol))
     error('Incompatible sizes between image and label.');
 else
     label_vol = label_vol>=MaskCutoff;
