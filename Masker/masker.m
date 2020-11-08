@@ -25,7 +25,7 @@
 % Yipeng Hu (yipeng.hu@ucl.ac.uk) August 2017
 % UCL Centre for Medical Image Computing
 
-function  label_vol = masker(image_vol, label_vol, filename, fig_pos)
+function  label_vol = masker(image_vol, label_vol, filename, fig_pos, flag_msgbox)
 
 %% configuration
 CSelection = {[.1,.3,.7], [.6,.5,1], [.3,.9,.2]};
@@ -82,14 +82,17 @@ CurrentAxesPoint = get(hAxes,'CurrentPoint');
 updateBrush(CurrentAxesPoint(1,:));
 
 % user guide
-msgbox({
-    'Mouse scroll: change slice';
-    'Left-click: labeling'; 
-    'Right-click: removing labeling'; 
-    '"s" + scroll: brush size'; 
-    '"c" + scroll: image intensity contrast';
-    '"a" + scroll: label transparency'}, 'The little masker guide');
+if nargin<5 || isempty(flag_msgbox), flag_msgbox=true; end
 
+if flag_msgbox
+    msgbox({
+        'Mouse scroll: change slice';
+        'Left-click: labeling';
+        'Right-click: removing labeling';
+        '"s" + scroll: brush size';
+        '"c" + scroll: image intensity contrast';
+        '"a" + scroll: label transparency'}, 'The little masker guide');
+end
 
 %% figure callbacks
 set(hFigure,'WindowScrollWheelFcn',@Callback_Figure_Scroll);
